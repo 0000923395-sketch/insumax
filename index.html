@@ -257,7 +257,7 @@
             </div>
             <div class="screen-footer">
               <span id="hero-timer">00:00</span>
-              <span>ESP32 · IoT</span>
+              <span>ESP32 · InsuTrack</span>
             </div>
           </div>
         </div>
@@ -410,7 +410,8 @@
       total: d.totalCost
     };
     addHistoryRow(row);
-    elapsedMs = 0; totalPulses = 0; gasMassKg = 0;
+    // Os dados permanecem congelados no visor após "Parar Solda".
+    // Só o botão "Zerar" (resetCurrent) deve limpar a leitura.
   }
 
   const historyData = [];
