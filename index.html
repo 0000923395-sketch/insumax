@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsuMax — Simulador de Monitoramento MIG/MAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#131110;
+    --bg-2:#1a1613;
+    --panel:#211c17;
+    --panel-2:#2a241d;
+    --panel-3:#171310;
+    --line:#3c342a;
+    --line-soft:#2a251e;
+    --orange:#E8722C;
+    --orange-deep:#C85A1A;
+    --orange-glow:rgba(232,114,44,.35);
+    --gas:#5CE0A0;
+    --gas-glow:rgba(92,224,160,.45);
+    --wire:#6FC3F7;
+    --wire-glow:rgba(111,195,247,.45);
+    --text:#F3EDE3;
+    --muted:#9C948A;
+    --muted-2:#6f665c;
+    --danger:#E86A4C;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(232,114,44,.10), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(92,224,160,.06), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--orange);color:#1a1310;}
+  h1,h2,h3,.disp{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.02em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:var(--orange);}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    border-bottom:1px solid var(--line);
+    padding:56px 0 40px;
+    background:
+      linear-gradient(180deg, rgba(232,114,44,.07), transparent 40%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,.015) 0 2px, transparent 2px 40px);
+  }
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em;
+    color:var(--orange); text-transform:uppercase; margin-bottom:18px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--gas);box-shadow:0 0 8px var(--gas-glow);animation:blink 2.2s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .hero h1{font-size:clamp(34px,5.4vw,58px); line-height:.98; margin:0 0 6px; color:var(--text);}
+  .hero h1 span{color:var(--orange);}
+  .hero p.lead{max-width:640px;color:var(--muted);font-size:16px;margin:16px 0 0;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:36px; margin-top:40px; align-items:start;}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr;}}
+
+  .credits{margin-top:22px; font-size:12.5px; color:var(--muted-2); font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- DEVICE PANEL (signature element) ---------- */
+  .device{
+    background:linear-gradient(180deg,#0f0d0b,#161210);
+    border:1px solid #000;
+    border-radius:18px;
+    padding:18px;
+    box-shadow:0 0 0 1px #2c261e inset, 0 30px 60px -20px rgba(0,0,0,.7), 0 0 0 6px #1c1712;
+    position:relative;
+  }
+  .device::before{
+    content:"";
+    position:absolute; inset:0; border-radius:18px; pointer-events:none;
+    background:linear-gradient(135deg, rgba(232,114,44,.10), transparent 40%);
+  }
+  .device-top{display:flex;justify-content:space-between;align-items:center;padding:2px 6px 14px;}
+  .device-brand{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.08em;font-size:15px;color:var(--text);}
+  .device-status{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .device-status .led{width:6px;height:6px;border-radius:50%;background:#4b4437;}
+  .device-status .led.on{background:var(--gas);box-shadow:0 0 6px var(--gas-glow);animation:blink 1.6s infinite;}
+
+  .screen{
+    background:linear-gradient(180deg,#0a0e0c,#0c1210);
+    border:1px solid #000;
+    border-radius:10px;
+    padding:14px 16px 16px;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.03);
+    position:relative;
+    overflow:hidden;
+  }
+  .screen::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px);
+    pointer-events:none;
+  }
+  .readout-row{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:12px 4px; border-bottom:1px dashed rgba(255,255,255,.07);
+  }
+  .readout-row:last-child{border-bottom:none;}
+  .readout-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase;}
+  .readout-value{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:26px; line-height:1;}
+  .readout-value small{font-size:13px; font-weight:500; margin-left:4px; opacity:.75;}
+  .readout-value.gas{color:var(--gas); text-shadow:0 0 18px var(--gas-glow);}
+  .readout-value.wire{color:var(--wire); text-shadow:0 0 18px var(--wire-glow);}
+  .readout-sub{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); margin-top:2px;}
+  .readout-sub b{color:var(--text); font-weight:600;}
+  .icon{font-size:20px;opacity:.85;}
+
+  .screen-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:0 4px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted-2);}
+
+  .device-controls{display:flex;justify-content:center;gap:10px;margin-top:14px;}
+  .device-controls button{
+    width:38px;height:38px;border-radius:50%;
+    background:linear-gradient(180deg,#2a241c,#171310);
+    border:1px solid #000; color:var(--muted);
+    box-shadow:0 2px 0 rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+    font-size:13px; cursor:default;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:46px 0;border-bottom:1px solid var(--line-soft);}
+  .section-head{display:flex; align-items:baseline; gap:14px; margin-bottom:26px;}
+  .section-head .tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);letter-spacing:.14em;border:1px solid var(--orange-deep);padding:3px 8px;border-radius:20px;}
+  .section-head h2{font-size:26px;margin:0;color:var(--text);}
+  .section-note{color:var(--muted);font-size:14.5px;max-width:680px;margin:-14px 0 26px;}
+
+  /* config grid */
+  .cfg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media (max-width:900px){.cfg-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:600px){.cfg-grid{grid-template-columns:1fr;}}
+  .cfg-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 20px;}
+  .cfg-card h3{font-size:13px;margin:0 0 14px;color:var(--orange);letter-spacing:.06em;}
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
+  .field input, .field select{
+    width:100%;background:var(--panel-3);border:1px solid var(--line);color:var(--text);
+    padding:9px 10px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:14px;
+  }
+  .field input:focus, .field select:focus{outline:none;border-color:var(--orange);}
+  .field-hint{font-size:11px;color:var(--muted-2);margin-top:5px;}
+
+  /* simulation controls */
+  .sim-panel{display:grid;grid-template-columns:280px 1fr;gap:26px;align-items:start;}
+  @media (max-width:850px){.sim-panel{grid-template-columns:1fr;}}
+  .sim-controls{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;position:sticky;top:20px;}
+  .sim-timer{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:700;text-align:center;margin:6px 0 4px;}
+  .sim-state{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:18px;}
+  .sim-state.active{color:var(--gas);}
+  .btn{
+    width:100%;padding:13px 16px;border-radius:9px;border:1px solid var(--orange-deep);
+    background:linear-gradient(180deg,var(--orange),var(--orange-deep));
+    color:#1a1310;font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.04em;
+    font-size:14.5px;text-transform:uppercase;cursor:pointer;
+    box-shadow:0 6px 16px -6px var(--orange-glow);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn.stop{background:linear-gradient(180deg,#EF7A63,var(--danger));border-color:#a83f28;}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);box-shadow:none;margin-top:10px;}
+  .btn.ghost:hover{color:var(--text);border-color:var(--muted-2);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:520px){.kpi-grid{grid-template-columns:1fr;}}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;}
+  .kpi .icon-row{display:flex;justify-content:space-between;align-items:flex-start;}
+  .kpi .kpi-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+  .kpi .kpi-value{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:30px;margin-top:10px;}
+  .kpi .kpi-value.gas{color:var(--gas);}
+  .kpi .kpi-value.wire{color:var(--wire);}
+  .kpi .kpi-sub{margin-top:8px;font-size:13px;color:var(--muted);}
+  .kpi .kpi-sub b{color:var(--text);}
+  .kpi .kpi-cost{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .kpi .kpi-cost span{font-size:12px;color:var(--muted);}
+  .kpi .kpi-cost b{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--text);}
+  .total-cost-bar{
+    margin-top:16px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;
+    padding:16px 20px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .total-cost-bar .label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+  .total-cost-bar .value{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--orange);}
+
+  /* formulas */
+  .formula-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:850px){.formula-grid{grid-template-columns:1fr;}}
+  .formula-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .formula-card h3{font-size:13px;color:var(--orange);letter-spacing:.06em;margin:0 0 4px;}
+  .formula-card .step{margin:14px 0;padding:12px 14px;background:var(--panel-3);border-radius:8px;border:1px solid var(--line-soft);}
+  .formula-card .step .f{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);}
+  .formula-card .step .plug{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-top:6px;}
+  .formula-card .step .plug b{color:var(--gas);}
+  .formula-card.wire .step .plug b{color:var(--wire);}
+
+  /* history */
+  .history-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  thead th{
+    text-align:left;color:var(--muted);font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  tbody td{padding:11px 12px;border-bottom:1px solid var(--line-soft);white-space:nowrap;}
+  tbody tr:hover{background:var(--panel-3);}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel);}
+  .empty-row td{color:var(--muted-2);font-style:italic;padding:24px 12px;text-align:center;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.5px;background:var(--panel-2);color:var(--muted);border:1px solid var(--line);}
+  .small-btn{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);background:transparent;
+    border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer;
+  }
+  .small-btn:hover{color:var(--text);border-color:var(--muted-2);}
+
+  footer{padding:34px 0 50px;text-align:center;}
+  footer p{color:var(--muted-2);font-size:12px;font-family:'JetBrains Mono',monospace;margin:4px 0;}
+  footer p.title{color:var(--muted);font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> SIMULADOR · TCC SENAI · DISPOSITIVO IOT</div>
+    <h1>INSU<span>MAX</span></h1>
+    <p class="lead">Simulação funcional do dispositivo de monitoramento de consumo de gás de proteção e arame em soldagem MIG/MAG. Substitui o protótipo físico para fins de apresentação: os cálculos abaixo aplicam exatamente as fórmulas de célula de carga (gás) e encoder rotativo (arame) descritas na memória de cálculo do trabalho.</p>
+
+    <div class="hero-grid">
+      <div>
+        <div class="cfg-card" style="margin-top:26px;">
+          <h3>COMO FUNCIONA A SIMULAÇÃO</h3>
+          <p style="color:var(--muted);font-size:14px;margin:0 0 10px;">Como não há sensores físicos conectados, o site simula os dois sinais de entrada do ESP32 em tempo real:</p>
+          <p style="color:var(--muted);font-size:14px;margin:0 0 6px;"><b style="color:var(--gas)">① Célula de carga</b> — simula a perda de massa do cilindro de gás durante a solda (ΔM), com base numa vazão configurável.</p>
+          <p style="color:var(--muted);font-size:14px;margin:0;"><b style="color:var(--wire)">② Encoder rotativo</b> — simula os pulsos gerados pela roldana em contato com o arame, convertidos em comprimento e depois em massa (via volume × densidade do aço).</p>
+        </div>
+        <div class="credits">GUILHERME EDUARDO · JÉSSICA THAIS · LUIZ FERNANDO · PAULO FIRMINO · VITOR HUGO</div>
+      </div>
+
+      <div class="device">
+        <div class="device-top">
+          <div class="device-brand">INSUMAX</div>
+          <div class="device-status"><span class="led on" id="wifiLed"></span> <span id="wifiText">Wi-Fi Conectado</span></div>
+        </div>
+        <div class="screen">
+          <div class="readout-row">
+            <div>
+              <div class="readout-label"><span class="icon">🛢️</span> Gás de proteção</div>
+              <div class="readout-value gas" id="hero-gas-kg">0,000<small>kg</small></div>
+              <div class="readout-sub">Custo total <b class="mono" id="hero-gas-cost">R$ 0,00</b></div>
+            </div>
+          </div>
+          <div class="readout-row">
+            <div>
+              <div class="readout-label"><span class="icon">🌀</span> Arame de solda</div>
+              <div class="readout-value wire" id="hero-wire-m">0,000<small>m</small></div>
+              <div class="readout-sub">Massa <b class="mono" id="hero-wire-kg">0,000 kg</b> · Custo <b class="mono" id="hero-wire-cost">R$ 0,00</b></div>
+            </div>
+          </div>
+          <div class="screen-footer">
+            <span id="hero-timer">00:00</span>
+            <span id="hero-state">AGUARDANDO</span>
+          </div>
+        </div>
+        <div class="device-controls">
+          <button>◀</button><button>OK</button><button>▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- CONFIG -->
+  <section id="config">
+    <div class="section-head"><span class="tag">01</span><h2>Parâmetros do dispositivo</h2></div>
+    <p class="section-note">Ajuste os parâmetros mecânicos e comerciais antes de iniciar a solda. Eles alimentam diretamente as fórmulas da seção 3 do TCC.</p>
+
+    <div class="cfg-grid">
+      <div class="cfg-card">
+        <h3>ENCODER / ARAME</h3>
+        <div class="field">
+          <label>Pulsos por revolução — PPR</label>
+          <input type="number" id="ppr" value="600" min="1" step="1">
+        </div>
+        <div class="field">
+          <label>Diâmetro da roldana — D (mm)</label>
+          <input type="number" id="rollerD" value="30" min="1" step="0.1">
+        </div>
+        <div class="field">
+          <label>Diâmetro do arame — d</label>
+          <select id="wireD">
+            <option value="0.8">0,8 mm</option>
+            <option value="1.0">1,0 mm</option>
+            <option value="1.2" selected>1,2 mm</option>
+            <option value="1.6">1,6 mm</option>
+          </select>
+          <div class="field-hint">Densidade do aço ρ = 7850 kg/m³ (fixa, conforme TCC)</div>
+        </div>
+        <div class="field">
+          <label>Velocidade de alimentação simulada (m/min)</label>
+          <input type="number" id="wireSpeed" value="5.5" min="0.5" step="0.1">
+        </div>
+      </div>
+
+      <div class="cfg-card">
+        <h3>CÉLULA DE CARGA / GÁS</h3>
+        <div class="field">
+          <label>Tipo de gás simulado</label>
+          <select id="gasType">
+            <option value="1.98">CO₂ puro (1,98 kg/m³)</option>
+            <option value="1.78" selected>Mistura Ar/CO₂ (1,78 kg/m³)</option>
+            <option value="1.66">Argônio puro (1,66 kg/m³)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Vazão simulada (L/min)</label>
+          <input type="number" id="gasFlow" value="14" min="1" step="0.5">
+        </div>
+        <div class="field">
+          <label>Massa inicial do cilindro — M_inicial (kg)</label>
+          <input type="number" id="mInicial" value="50" min="1" step="0.1">
+          <div class="field-hint">Usada só para exibir M_final = M_inicial − ΔM (fórmula 3.1)</div>
+        </div>
+      </div>
+
+      <div class="cfg-card">
+        <h3>PREÇOS (INSUMOS)</h3>
+        <div class="field">
+          <label>Preço do gás — R$/kg</label>
+          <input type="number" id="gasPrice" value="7,81" step="0.01">
+        </div>
+        <div class="field">
+          <label>Preço do arame — R$/kg</label>
+          <input type="number" id="wirePrice" value="8,50" step="0.01">
+          <div class="field-hint">Valores padrão de exemplo — edite livremente para sua apresentação.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIMULATION -->
+  <section id="simulation">
+    <div class="section-head"><span class="tag">02</span><h2>Simular solda</h2></div>
+    <p class="section-note">Inicie a solda para gerar os sinais simulados de encoder e célula de carga em tempo real (5 leituras/segundo). Pare quando quiser fechar o registro — ele entra automaticamente no histórico da seção 04.</p>
+
+    <div class="sim-panel">
+      <div class="sim-controls">
+        <div class="sim-timer" id="timer">00:00</div>
+        <div class="sim-state" id="simStateLabel">AGUARDANDO INÍCIO</div>
+        <button class="btn" id="startBtn">▶ Iniciar solda</button>
+        <button class="btn ghost" id="resetBtn">Zerar leitura atual</button>
+      </div>
+
+      <div>
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="icon-row">
+              <div>
+                <div class="kpi-label">🛢️ Gás — ΔM consumida</div>
+                <div class="kpi-value gas" id="gasKg">0,000 <small style="font-size:15px;">kg</small></div>
+              </div>
+            </div>
+            <div class="kpi-sub">M_inicial <b id="mInicialShow">50,000</b> kg → M_final <b id="mFinalShow">50,000</b> kg</div>
+            <div class="kpi-cost"><span>Custo do gás</span><b id="gasCost">R$ 0,00</b></div>
+          </div>
+
+          <div class="kpi">
+            <div class="icon-row">
+              <div>
+                <div class="kpi-label">🌀 Arame — massa consumida</div>
+                <div class="kpi-value wire" id="wireKg">0,000 <small style="font-size:15px;">kg</small></div>
+              </div>
+            </div>
+            <div class="kpi-sub">Comprimento <b id="wireM">0,000</b> m · Pulsos <b id="pulseCount">0</b></div>
+            <div class="kpi-cost"><span>Custo do arame</span><b id="wireCost">R$ 0,00</b></div>
+          </div>
+        </div>
+
+        <div class="total-cost-bar">
+          <span class="label">Custo total do passe de solda</span>
+          <span class="value" id="totalCost">R$ 0,00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULAS -->
+  <section id="formulas">
+    <div class="section-head"><span class="tag">03</span><h2>Memória de cálculo aplicada</h2></div>
+    <p class="section-note">As mesmas fórmulas da seção 3 do TCC, atualizadas ao vivo com os valores da leitura atual.</p>
+
+    <div class="formula-grid">
+      <div class="formula-card">
+        <h3>3.1 — CONSUMO DE GÁS</h3>
+        <div class="step">
+          <div class="f">ΔM = M_inicial − M_final</div>
+          <div class="plug" id="fx-gas-1">ΔM = 50,000 − 50,000 = <b>0,000 kg</b></div>
+        </div>
+        <div class="step">
+          <div class="f">Custo_gás = ΔM × Preço_kg</div>
+          <div class="plug" id="fx-gas-2">Custo_gás = 0,000 × R$ 7,81 = <b>R$ 0,00</b></div>
+        </div>
+      </div>
+
+      <div class="formula-card wire">
+        <h3>3.2 — CONSUMO DE ARAME</h3>
+        <div class="step">
+          <div class="f">L = (Pulsos / PPR) × (π × D)</div>
+          <div class="plug" id="fx-wire-1">L = (0 / 600) × (π × 0,030) = <b>0,000 m</b></div>
+        </div>
+        <div class="step">
+          <div class="f">Volume = π × (d/2)² × L</div>
+          <div class="plug" id="fx-wire-2">Volume = π × (0,0006)² × 0,000 = <b>0 m³</b></div>
+        </div>
+        <div class="step">
+          <div class="f">Massa_arame = Volume × ρ &nbsp;(ρ=7850 kg/m³)</div>
+          <div class="plug" id="fx-wire-3">Massa_arame = 0 × 7850 = <b>0,000 kg</b></div>
+        </div>
+        <div class="step">
+          <div class="f">Custo_arame = Massa_arame × Preço_kg</div>
+          <div class="plug" id="fx-wire-4">Custo_arame = 0,000 × R$ 8,50 = <b>R$ 0,00</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="history">
+    <div class="history-head">
+      <div class="section-head" style="margin:0;"><span class="tag">04</span><h2>Dashboard &amp; histórico</h2></div>
+      <button class="small-btn" id="exportBtn">⬇ Exportar CSV</button>
+    </div>
+    <p class="section-note">Cada solda finalizada é registrada aqui — como os dados que o ESP32 enviaria via Wi-Fi para a plataforma IoT.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Duração</th><th>Gás (kg)</th><th>Custo gás</th>
+            <th>Arame (m)</th><th>Massa arame (kg)</th><th>Custo arame</th><th>Custo total</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr class="empty-row"><td colspan="8">Nenhuma solda registrada ainda — inicie uma simulação acima.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p class="title">InsuMax — SENAI 2026</p>
+  <p>Dispositivo IoT para monitoramento de consumo de gás e arame em soldagem MIG/MAG</p>
+  <p>Site de simulação criado para apoiar a apresentação à banca examinadora</p>
+</footer>
+
+<script>
+(function(){
+  // ---------- helpers ----------
+  const $ = id => document.getElementById(id);
+  const fmt = (n, d=3) => n.toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d});
+  const fmtMoney = n => 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const parseNum = v => parseFloat(String(v).replace(',', '.')) || 0;
+
+  // ---------- state ----------
+  let running = false;
+  let tickHandle = null;
+  let elapsedMs = 0;
+  let totalPulses = 0;
+  let gasMassKg = 0;
+  let sessionCount = 0;
+  const TICK_MS = 200;
+
+  function cfg(){
+    return {
+      ppr: parseNum($('ppr').value) || 1,
+      rollerD_m: parseNum($('rollerD').value) / 1000,
+      wireD_m: parseNum($('wireD').value) / 1000,
+      wireSpeed_mmin: parseNum($('wireSpeed').value),
+      gasDensity: parseNum($('gasType').value),
+      gasFlow_Lmin: parseNum($('gasFlow').value),
+      mInicial: parseNum($('mInicial').value),
+      gasPrice: parseNum($('gasPrice').value),
+      wirePrice: parseNum($('wirePrice').value)
+    };
+  }
+
+  function computeDerived(c){
+    const L = (totalPulses / c.ppr) * (Math.PI * c.rollerD_m);
+    const volume = Math.PI * Math.pow(c.wireD_m/2, 2) * L;
+    const wireMass = volume * 7850;
+    const wireCost = wireMass * c.wirePrice;
+    const gasCost = gasMassKg * c.gasPrice;
+    const mFinal = Math.max(c.mInicial - gasMassKg, 0);
+    return {L, volume, wireMass, wireCost, gasCost, mFinal, totalCost: wireCost + gasCost};
+  }
+
+  function render(){
+    const c = cfg();
+    const d = computeDerived(c);
+
+    // hero device
+    $('hero-gas-kg').innerHTML = fmt(gasMassKg) + '<small>kg</small>';
+    $('hero-gas-cost').textContent = fmtMoney(d.gasCost);
+    $('hero-wire-m').innerHTML = fmt(d.L) + '<small>m</small>';
+    $('hero-wire-kg').textContent = fmt(d.wireMass) + ' kg';
+    $('hero-wire-cost').textContent = fmtMoney(d.wireCost);
+    $('hero-timer').textContent = timeStr();
+    $('hero-state').textContent = running ? 'SOLDANDO' : 'AGUARDANDO';
+
+    // sim panel
+    $('gasKg').innerHTML = fmt(gasMassKg) + ' <small style="font-size:15px;">kg</small>';
+    $('mInicialShow').textContent = fmt(c.mInicial);
+    $('mFinalShow').textContent = fmt(d.mFinal);
+    $('gasCost').textContent = fmtMoney(d.gasCost);
+
+    $('wireKg').innerHTML = fmt(d.wireMass) + ' <small style="font-size:15px;">kg</small>';
+    $('wireM').textContent = fmt(d.L);
+    $('pulseCount').textContent = Math.round(totalPulses).toLocaleString('pt-BR');
+    $('wireCost').textContent = fmtMoney(d.wireCost);
+
+    $('totalCost').textContent = fmtMoney(d.totalCost);
+    $('timer').textContent = timeStr();
+
+    // formulas live
+    $('fx-gas-1').innerHTML = `ΔM = ${fmt(c.mInicial)} − ${fmt(d.mFinal)} = <b>${fmt(gasMassKg)} kg</b>`;
+    $('fx-gas-2').innerHTML = `Custo_gás = ${fmt(gasMassKg)} × ${fmtMoney(c.gasPrice)} = <b>${fmtMoney(d.gasCost)}</b>`;
+    $('fx-wire-1').innerHTML = `L = (${Math.round(totalPulses)} / ${c.ppr}) × (π × ${fmt(c.rollerD_m,4)}) = <b>${fmt(d.L)} m</b>`;
+    $('fx-wire-2').innerHTML = `Volume = π × (${fmt(c.wireD_m/2,5)})² × ${fmt(d.L)} = <b>${d.volume.toExponential(3)} m³</b>`;
+    $('fx-wire-3').innerHTML = `Massa_arame = ${d.volume.toExponential(3)} × 7850 = <b>${fmt(d.wireMass)} kg</b>`;
+    $('fx-wire-4').innerHTML = `Custo_arame = ${fmt(d.wireMass)} × ${fmtMoney(c.wirePrice)} = <b>${fmtMoney(d.wireCost)}</b>`;
+  }
+
+  function timeStr(){
+    const totalSec = Math.floor(elapsedMs/1000);
+    const m = String(Math.floor(totalSec/60)).padStart(2,'0');
+    const s = String(totalSec%60).padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  function tick(){
+    const c = cfg();
+    const dtSec = TICK_MS/1000;
+    elapsedMs += TICK_MS;
+
+    // --- wire encoder simulation ---
+    const jitterW = 1 + (Math.random()-0.5)*0.12;
+    const speed_m_s = (c.wireSpeed_mmin * jitterW) / 60;
+    const pulsesPerMeter = c.ppr / (Math.PI * c.rollerD_m);
+    totalPulses += speed_m_s * dtSec * pulsesPerMeter;
+
+    // --- gas load-cell simulation ---
+    const jitterG = 1 + (Math.random()-0.5)*0.10;
+    const flowKgMin = ((c.gasFlow_Lmin * jitterG) / 1000) * c.gasDensity;
+    gasMassKg += (flowKgMin/60) * dtSec;
+
+    render();
+  }
+
+  function setRunningUI(){
+    const startBtn = $('startBtn');
+    startBtn.textContent = running ? '■ Parar solda' : '▶ Iniciar solda';
+    startBtn.classList.toggle('stop', running);
+    $('simStateLabel').textContent = running ? 'SOLDANDO — CAPTURANDO SINAIS' : 'AGUARDANDO INÍCIO';
+    $('simStateLabel').classList.toggle('active', running);
+  }
+
+  function startStop(){
+    if(!running){
+      running = true;
+      tickHandle = setInterval(tick, TICK_MS);
+    } else {
+      running = false;
+      clearInterval(tickHandle);
+      commitSession();
+    }
+    setRunningUI();
+    render();
+  }
+
+  function resetCurrent(){
+    if(running) return;
+    elapsedMs = 0; totalPulses = 0; gasMassKg = 0;
+    render();
+  }
+
+  function commitSession(){
+    const c = cfg();
+    const d = computeDerived(c);
+    if(d.L < 0.001 && gasMassKg < 0.0005) return; // ignore empty session
+    sessionCount++;
+    const row = {
+      n: sessionCount,
+      dur: timeStr(),
+      gasKg: gasMassKg,
+      gasCost: d.gasCost,
+      wireM: d.L,
+      wireKg: d.wireMass,
+      wireCost: d.wireCost,
+      total: d.totalCost
+    };
+    addHistoryRow(row);
+    elapsedMs = 0; totalPulses = 0; gasMassKg = 0;
+  }
+
+  const historyData = [];
+  function addHistoryRow(row){
+    historyData.push(row);
+    const tbody = $('historyBody');
+    if(historyData.length === 1) tbody.innerHTML = '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="pill">#${row.n}</span></td>
+      <td>${row.dur}</td>
+      <td>${fmt(row.gasKg)}</td>
+      <td>${fmtMoney(row.gasCost)}</td>
+      <td>${fmt(row.wireM)}</td>
+      <td>${fmt(row.wireKg)}</td>
+      <td>${fmtMoney(row.wireCost)}</td>
+      <td><b>${fmtMoney(row.total)}</b></td>
+    `;
+    tbody.prepend(tr);
+  }
+
+  function exportCSV(){
+    if(historyData.length === 0){ alert('Nenhum registro para exportar ainda.'); return; }
+    let csv = 'Sessao;Duracao;Gas_kg;Custo_gas;Arame_m;Massa_arame_kg;Custo_arame;Custo_total\n';
+    historyData.forEach(r=>{
+      csv += [r.n, r.dur, fmt(r.gasKg), fmt(r.gasCost,2), fmt(r.wireM), fmt(r.wireKg), fmt(r.wireCost,2), fmt(r.total,2)].join(';') + '\n';
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'insumax_historico.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  $('startBtn').addEventListener('click', startStop);
+  $('resetBtn').addEventListener('click', resetCurrent);
+  $('exportBtn').addEventListener('click', exportCSV);
+  ['ppr','rollerD','wireD','wireSpeed','gasType','gasFlow','mInicial','gasPrice','wirePrice'].forEach(id=>{
+    $(id).addEventListener('input', render);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
