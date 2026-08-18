@@ -62,14 +62,14 @@
   @media (max-width:900px){.layout{grid-template-columns:1fr;}}
 
   /* ---------- CONFIG CARDS ---------- */
-  .cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 18px 20px;margin-bottom:18px;box-shadow:0 1px 2px rgba(14,30,51,.03);}
-  .cfg-card h3{font-size:12px;margin:0 0 14px;color:var(--blue-600);letter-spacing:.08em;font-family:'JetBrains Mono',monospace;font-weight:600;}
-  .field{margin-bottom:13px;}
+  .cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px 15px;margin-bottom:13px;box-shadow:0 1px 2px rgba(14,30,51,.03);}
+  .cfg-card h3{font-size:11px;margin:0 0 10px;color:var(--blue-600);letter-spacing:.08em;font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .field{margin-bottom:9px;}
   .field:last-child{margin-bottom:0;}
-  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
+  .field label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:4px;font-family:'JetBrains Mono',monospace;}
   .field input, .field select{
     width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    padding:9px 10px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:14px;
+    padding:6px 8px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:12.5px;
   }
   .field input:focus, .field select:focus{outline:none;border-color:var(--blue-500);box-shadow:0 0 0 3px var(--blue-100);}
 
@@ -79,49 +79,87 @@
   /* device screen (visor) */
   .device{
     background:linear-gradient(155deg,#132A4A,#0A1B32);
-    border-radius:20px;
-    padding:20px;
+    border-radius:16px;
+    padding:14px;
     box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 30px 60px -24px rgba(8,27,51,.45);
     position:relative;
   }
-  .device-top{display:flex;justify-content:space-between;align-items:center;padding:2px 6px 14px;}
-  .device-brand{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.08em;font-size:15px;color:#fff;}
-  .device-status{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9FB6D6;}
+  .device-top{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 9px;}
+  .device-brand{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.08em;font-size:13px;color:#fff;}
+  .device-status{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#9FB6D6;}
   .device-status .led{width:6px;height:6px;border-radius:50%;background:var(--sky);box-shadow:0 0 6px rgba(95,168,255,.7);animation:blink 1.8s infinite;}
 
   .screen{
     background:linear-gradient(180deg,#040E1E,#071627);
-    border-radius:13px;
-    padding:16px 18px 14px;
+    border-radius:10px;
+    padding:11px 13px 9px;
     box-shadow:inset 0 0 34px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.03);
     position:relative;
     overflow:hidden;
   }
   .readout-row{
     display:flex; align-items:center; justify-content:space-between; gap:14px;
-    padding:14px 4px; border-bottom:1px dashed rgba(255,255,255,.08);
+    padding:8px 4px; border-bottom:1px dashed rgba(255,255,255,.08);
   }
-  .readout-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.12em; color:#7C93B4; text-transform:uppercase;}
-  .readout-value{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:28px; line-height:1;}
-  .readout-value small{font-size:13px; font-weight:500; margin-left:5px; opacity:.7;}
+  .readout-label{font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.12em; color:#7C93B4; text-transform:uppercase;}
+  .readout-value{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:21px; line-height:1;}
+  .readout-value small{font-size:11px; font-weight:500; margin-left:5px; opacity:.7;}
   .readout-value.gas{color:#FFFFFF; text-shadow:0 0 20px rgba(255,255,255,.22);}
   .readout-value.wire{color:var(--sky); text-shadow:0 0 20px rgba(95,168,255,.45);}
-  .readout-sub{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#7C93B4; margin-top:4px;}
+  .readout-sub{font-family:'JetBrains Mono',monospace; font-size:11px; color:#7C93B4; margin-top:3px;}
   .readout-sub b{color:#DCE8F9; font-weight:600;}
-  .icon{font-size:19px;opacity:.9;margin-right:2px;}
+  .icon{font-size:16px;opacity:.9;margin-right:2px;}
 
   .total-strip{
-    margin-top:6px; padding:14px 10px 4px; display:flex; align-items:center; justify-content:space-between;
+    margin-top:2px; padding:8px 8px 2px; display:flex; align-items:center; justify-content:space-between;
   }
-  .total-strip .t-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:#9FB6D6;text-transform:uppercase;}
-  .total-strip .t-value{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#fff;text-shadow:0 0 22px rgba(95,168,255,.35);}
+  .total-strip .t-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#9FB6D6;text-transform:uppercase;}
+  .total-strip .t-value{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:#fff;text-shadow:0 0 22px rgba(95,168,255,.35);}
 
-  .screen-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:10px 6px 2px;border-top:1px solid rgba(255,255,255,.06);font-family:'JetBrains Mono',monospace;font-size:11px;color:#6C84A6;}
+  .screen-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:7px 4px 2px;border-top:1px solid rgba(255,255,255,.06);font-family:'JetBrains Mono',monospace;font-size:10px;color:#6C84A6;}
   .screen-footer #hero-state.active{color:var(--sky);}
 
+  /* ---------- TRIGGER (gatilho da tocha) ---------- */
+  .trigger-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px 14px;box-shadow:0 1px 2px rgba(14,30,51,.03);}
+  .trigger-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--blue-600);margin-bottom:9px;font-weight:600;}
+  .trigger-face{
+    user-select:none; -webkit-user-select:none; touch-action:none;
+    position:relative;
+    min-height:220px;
+    border-radius:11px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#132A4A,#0A1B32);
+    border:2px dashed var(--border);
+    cursor:crosshair;
+    transition:border-color .12s ease, transform .08s ease, box-shadow .12s ease;
+  }
+  .trigger-face .canvas-stack{position:absolute;inset:0;}
+  .trigger-face .canvas-stack canvas{position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:none;}
+  .trigger-face .trigger-overlay{
+    position:relative;z-index:2;pointer-events:none;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    height:220px; padding:14px;
+    transition:opacity .15s ease;
+  }
+  .trigger-face .trigger-icon{font-size:24px;opacity:.5;transition:opacity .12s ease, transform .12s ease;}
+  .trigger-face .trigger-text{font-family:'JetBrains Mono',monospace;font-size:12px;color:#B9CBE3;text-align:center;letter-spacing:.02em;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+  .trigger-face.active{
+    border-color:var(--blue-600); border-style:solid;
+    transform:scale(0.99);
+    animation:triggerGlow .9s ease-in-out infinite alternate;
+  }
+  .trigger-face.active .trigger-icon{opacity:1;transform:scale(1.15);}
+  .trigger-face.active .trigger-overlay{opacity:0;}
+  .trigger-face.disabled{opacity:.5;cursor:not-allowed;}
+  .trigger-face.disabled .canvas-stack canvas{cursor:not-allowed;}
+  @keyframes triggerGlow{
+    from{box-shadow:0 0 0 5px var(--blue-100), 0 8px 20px -10px rgba(29,95,209,.55);}
+    to{box-shadow:0 0 0 9px var(--blue-100), 0 12px 26px -8px rgba(29,95,209,.7);}
+  }
+
   /* controls */
-  .controls-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
-  .controls-card .timer{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--navy-900);min-width:90px;}
+  .controls-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .controls-card .timer{font-family:'JetBrains Mono',monospace;font-size:21px;font-weight:700;color:var(--navy-900);min-width:80px;}
   .controls-card .btn-group{display:flex;gap:10px;flex:1;min-width:220px;}
   .btn{
     padding:13px 18px;border-radius:10px;border:none;
@@ -262,6 +300,20 @@
           </div>
         </div>
 
+        <div class="trigger-card">
+          <div class="trigger-label">SIMULADOR DE GATILHO DA TOCHA</div>
+          <div class="trigger-face" id="triggerFace">
+            <div class="canvas-stack">
+              <canvas id="weldCanvas"></canvas>
+              <canvas id="fxCanvas"></canvas>
+            </div>
+            <div class="trigger-overlay" id="triggerOverlay">
+              <div class="trigger-icon">⚡</div>
+              <div class="trigger-text" id="triggerText">Inicie a solda para habilitar o gatilho</div>
+            </div>
+          </div>
+        </div>
+
         <div class="controls-card">
           <div class="timer" id="timerDup">00:00</div>
           <div class="btn-group">
@@ -303,6 +355,7 @@
   const parseNum = v => parseFloat(String(v).replace(',', '.')) || 0;
 
   let running = false;
+  let triggerPressed = false;
   let tickHandle = null;
   let elapsedMs = 0;
   let totalPulses = 0;
@@ -350,24 +403,28 @@
     $('hero-wire-cost').textContent = fmtMoney(d.wireCost);
     $('hero-total-cost').textContent = fmtMoney(d.totalCost);
     $('hero-timer').textContent = timeStr();
-    $('hero-state').textContent = running ? 'SOLDANDO' : 'AGUARDANDO';
-    $('hero-state').classList.toggle('active', running);
+    $('hero-state').textContent = !running ? 'AGUARDANDO' : (triggerPressed ? 'SOLDANDO' : 'EM ESPERA');
+    $('hero-state').classList.toggle('active', running && triggerPressed);
     $('timerDup').textContent = timeStr();
   }
 
   function tick(){
-    const c = cfg();
+    // O cronômetro geral do sistema avança sozinho enquanto estiver ligado.
     const dtSec = TICK_MS/1000;
     elapsedMs += TICK_MS;
 
-    const jitterW = 1 + (Math.random()-0.5)*0.12;
-    const speed_m_s = (c.wireSpeed_mmin * jitterW) / 60;
-    const pulsesPerMeter = c.ppr / (Math.PI * c.rollerD_m);
-    totalPulses += speed_m_s * dtSec * pulsesPerMeter;
+    // O consumo de gás/arame só é computado com o gatilho da tocha pressionado.
+    if(triggerPressed){
+      const c = cfg();
+      const jitterW = 1 + (Math.random()-0.5)*0.12;
+      const speed_m_s = (c.wireSpeed_mmin * jitterW) / 60;
+      const pulsesPerMeter = c.ppr / (Math.PI * c.rollerD_m);
+      totalPulses += speed_m_s * dtSec * pulsesPerMeter;
 
-    const jitterG = 1 + (Math.random()-0.5)*0.10;
-    const flowKgMin = ((c.gasFlow_Lmin * jitterG) / 1000) * c.gasDensity;
-    gasMassKg += (flowKgMin/60) * dtSec;
+      const jitterG = 1 + (Math.random()-0.5)*0.10;
+      const flowKgMin = ((c.gasFlow_Lmin * jitterG) / 1000) * c.gasDensity;
+      gasMassKg += (flowKgMin/60) * dtSec;
+    }
 
     render();
   }
@@ -377,6 +434,7 @@
     startBtn.textContent = running ? '■ Parar solda' : '▶ Iniciar solda';
     startBtn.classList.toggle('stop', running);
     startBtn.classList.toggle('start', !running);
+    updateTriggerUI();
   }
 
   function startStop(){
@@ -386,6 +444,7 @@
     } else {
       running = false;
       clearInterval(tickHandle);
+      releaseTrigger();
       commitSession();
     }
     setRunningUI();
@@ -395,8 +454,206 @@
   function resetCurrent(){
     if(running) return;
     elapsedMs = 0; totalPulses = 0; gasMassKg = 0;
+    if(typeof resetWeldCanvas === 'function') resetWeldCanvas();
     render();
   }
+
+  // ---------- Simulador de gatilho da tocha ----------
+  const triggerFace = $('triggerFace');
+  const triggerText = $('triggerText');
+
+  function updateTriggerUI(){
+    triggerFace.classList.toggle('disabled', !running);
+    if(!running){
+      triggerText.textContent = 'Inicie a solda para habilitar o gatilho';
+    } else if(!triggerPressed){
+      triggerText.textContent = 'Pressione e segure para soldar';
+    }
+  }
+
+  function pressTrigger(e){
+    if(!running || triggerPressed) return;
+    if(e.cancelable) e.preventDefault();
+    triggerPressed = true;
+    triggerFace.classList.add('active');
+    triggerText.textContent = 'SOLDANDO...';
+    render();
+  }
+
+  function releaseTrigger(){
+    if(!triggerPressed) return;
+    triggerPressed = false;
+    triggerFace.classList.remove('active');
+    triggerText.textContent = running ? 'Pressione e segure para soldar' : 'Inicie a solda para habilitar o gatilho';
+    render();
+  }
+
+  // ---------- Canvas do cordão de solda + faíscas ----------
+  const weldCanvas = $('weldCanvas');
+  const fxCanvas = $('fxCanvas');
+  const weldCtx = weldCanvas.getContext('2d');
+  const fxCtx = fxCanvas.getContext('2d');
+
+  let dpr = Math.max(1, window.devicePixelRatio || 1);
+  let lastCanvasW = 0, lastCanvasH = 0;
+  let hotSegments = [];   // trechos recém-soldados, ainda esfriando (animados)
+  let particles = [];     // faíscas
+  let lastPoint = null;   // último ponto do arraste, para ligar os segmentos
+  const COOL_MS = 900;    // tempo até o cordão esfriar totalmente
+
+  function paintBackground(ctx, w, h){
+    ctx.clearRect(0,0,w,h);
+    const g = ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#132A4A');
+    g.addColorStop(1,'#0A1B32');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,w,h);
+  }
+
+  function sizeCanvases(){
+    const rect = triggerFace.getBoundingClientRect();
+    const w = Math.max(1, Math.round(rect.width));
+    const h = Math.max(1, Math.round(rect.height));
+    if(w === lastCanvasW && h === lastCanvasH) return;
+    lastCanvasW = w; lastCanvasH = h;
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    [weldCanvas, fxCanvas].forEach(cv=>{
+      cv.width = Math.round(w*dpr);
+      cv.height = Math.round(h*dpr);
+    });
+    weldCtx.setTransform(dpr,0,0,dpr,0,0);
+    fxCtx.setTransform(dpr,0,0,dpr,0,0);
+    paintBackground(weldCtx, w, h);
+    hotSegments = []; particles = []; lastPoint = null;
+  }
+
+  function resetWeldCanvas(){
+    hotSegments = []; particles = []; lastPoint = null;
+    paintBackground(weldCtx, lastCanvasW, lastCanvasH);
+  }
+
+  function getPos(e){
+    const rect = fxCanvas.getBoundingClientRect();
+    const src = e.touches && e.touches.length ? e.touches[0] : e;
+    return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+  }
+
+  function spawnSparks(x, y, n){
+    for(let i=0;i<n;i++){
+      const angle = Math.random()*Math.PI*2;
+      const speed = 0.7 + Math.random()*2.4;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed - 1.4,
+        life: 0,
+        maxLife: 280 + Math.random()*380,
+        size: 1 + Math.random()*2.2
+      });
+    }
+  }
+
+  function addWeldPoint(x, y){
+    const now = performance.now();
+    if(lastPoint){
+      hotSegments.push({x1:lastPoint.x, y1:lastPoint.y, x2:x, y2:y, t: now});
+    }
+    lastPoint = {x, y};
+    spawnSparks(x, y, 2 + Math.floor(Math.random()*3));
+  }
+
+  function colorForAge(ageMs){
+    const t = Math.min(1, ageMs / COOL_MS);
+    const r = Math.round(255 + (90-255)*t);
+    const g = Math.round(140 + (96-140)*t);
+    const b = Math.round(20  + (104-20)*t);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function drawSegment(ctx, seg, color, width, glow){
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if(glow){ ctx.shadowColor = color; ctx.shadowBlur = glow; }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(seg.x1, seg.y1);
+    ctx.lineTo(seg.x2, seg.y2);
+    ctx.stroke();
+    if(glow){ ctx.shadowBlur = 0; }
+  }
+
+  function handleDown(e){
+    pressTrigger(e); // lógica de negócio original, inalterada
+    if(!running) return;
+    if(e.cancelable) e.preventDefault();
+    const p = getPos(e);
+    lastPoint = p;
+    spawnSparks(p.x, p.y, 5);
+  }
+
+  function handleMove(e){
+    if(!triggerPressed) return;
+    if(e.cancelable) e.preventDefault();
+    const p = getPos(e);
+    addWeldPoint(p.x, p.y);
+  }
+
+  function handleUp(){
+    lastPoint = null;
+    releaseTrigger(); // lógica de negócio original, inalterada
+  }
+
+  fxCanvas.addEventListener('mousedown', handleDown);
+  fxCanvas.addEventListener('mousemove', handleMove);
+  fxCanvas.addEventListener('touchstart', handleDown, {passive:false});
+  fxCanvas.addEventListener('touchmove', handleMove, {passive:false});
+  window.addEventListener('mouseup', handleUp);
+  window.addEventListener('touchend', handleUp);
+  window.addEventListener('touchcancel', handleUp);
+  window.addEventListener('resize', sizeCanvases);
+
+  let lastFrame = performance.now();
+  function animateWeld(now){
+    requestAnimationFrame(animateWeld);
+    const dt = Math.min(50, now - lastFrame);
+    lastFrame = now;
+    if(lastCanvasW === 0) return;
+
+    fxCtx.clearRect(0, 0, lastCanvasW, lastCanvasH);
+
+    // esfria os trechos recentes; ao atingir o tempo de resfriamento, "grava" no canvas permanente
+    for(let i=hotSegments.length-1;i>=0;i--){
+      const seg = hotSegments[i];
+      const age = now - seg.t;
+      if(age >= COOL_MS){
+        drawSegment(weldCtx, seg, colorForAge(COOL_MS), 5, 0);
+        hotSegments.splice(i,1);
+      } else {
+        const width = 6.5 - (age/COOL_MS)*1.5;
+        drawSegment(fxCtx, seg, colorForAge(age), width, 10*(1-age/COOL_MS));
+      }
+    }
+
+    // atualiza e desenha as faíscas
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.life += dt;
+      if(p.life >= p.maxLife){ particles.splice(i,1); continue; }
+      p.vy += 0.014*dt; // gravidade puxando para baixo
+      p.x += p.vx*(dt/16);
+      p.y += p.vy*(dt/16);
+      const lifeRatio = 1 - p.life/p.maxLife;
+      fxCtx.globalAlpha = Math.max(0, lifeRatio);
+      fxCtx.fillStyle = Math.random() < 0.5 ? '#FFD24D' : '#FF9B3D';
+      fxCtx.beginPath();
+      fxCtx.arc(p.x, p.y, Math.max(0.4, p.size*lifeRatio), 0, Math.PI*2);
+      fxCtx.fill();
+      fxCtx.globalAlpha = 1;
+    }
+  }
+  requestAnimationFrame(animateWeld);
+  sizeCanvases();
 
   function commitSession(){
     const c = cfg();
@@ -454,6 +711,7 @@
     $(id).addEventListener('input', render);
   });
 
+  updateTriggerUI();
   render();
 })();
 </script>
