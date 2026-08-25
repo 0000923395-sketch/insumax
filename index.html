@@ -243,9 +243,9 @@
           <div class="field">
             <label>Tipo de gás</label>
             <select id="gasType">
-              <option value="1.98">CO₂ puro</option>
-              <option value="1.78" selected>Mistura Ar/CO₂</option>
               <option value="1.66">Argônio puro</option>
+              <option value="1.78" selected>Argônio + CO₂</option>
+              <option value="1.98">CO₂ puro</option>
             </select>
           </div>
           <div class="field">
@@ -257,8 +257,15 @@
         <div class="cfg-card">
           <h3>PREÇOS</h3>
           <div class="field">
-            <label>Preço do gás — R$/kg</label>
+            <label>Preço do gás — R$</label>
             <input type="number" id="gasPrice" value="7,81" step="0.01">
+          </div>
+          <div class="field">
+            <label>Unidade do preço do gás</label>
+            <select id="gasPriceUnit">
+              <option value="kg" selected>Por kg</option>
+              <option value="m3">Por m³</option>
+            </select>
           </div>
           <div class="field">
             <label>Preço do arame — R$/kg</label>
@@ -279,7 +286,7 @@
               <div>
                 <div class="readout-label"><span class="icon">🛢️</span> Gás de proteção</div>
                 <div class="readout-value gas" id="hero-gas-kg">0,000<small>kg</small></div>
-                <div class="readout-sub">Custo <b id="hero-gas-cost">R$ 0,00</b></div>
+                <div class="readout-sub">Volume <b id="hero-gas-m3">0,000 m³</b> · Custo <b id="hero-gas-cost">R$ 0,00</b></div>
               </div>
             </div>
             <div class="readout-row">
@@ -331,12 +338,12 @@
             <table>
               <thead>
                 <tr>
-                  <th>#</th><th>Duração</th><th>Gás (kg)</th><th>Custo gás</th>
+                  <th>#</th><th>Duração</th><th>Gás (kg)</th><th>Gás (m³)</th><th>Custo gás</th>
                   <th>Arame (m)</th><th>Massa arame (kg)</th><th>Custo arame</th><th>Total</th>
                 </tr>
               </thead>
               <tbody id="historyBody">
-                <tr class="empty-row"><td colspan="8">Nenhuma solda registrada ainda.</td></tr>
+                <tr class="empty-row"><td colspan="9">Nenhuma solda registrada ainda.</td></tr>
               </tbody>
             </table>
           </div>
@@ -372,6 +379,7 @@
       gasDensity: parseNum($('gasType').value),
       gasFlow_Lmin: parseNum($('gasFlow').value),
       gasPrice: parseNum($('gasPrice').value),
+      gasPriceUnit: $('gasPriceUnit').value,
       wirePrice: parseNum($('wirePrice').value)
     };
   }
@@ -381,8 +389,9 @@
     const volume = Math.PI * Math.pow(c.wireD_m/2, 2) * L;
     const wireMass = volume * 7850;
     const wireCost = wireMass * c.wirePrice;
-    const gasCost = gasMassKg * c.gasPrice;
-    return {L, volume, wireMass, wireCost, gasCost, totalCost: wireCost + gasCost};
+    const gasVolume = c.gasDensity > 0 ? gasMassKg / c.gasDensity : 0;
+    const gasCost = c.gasPriceUnit === 'm3' ? gasVolume * c.gasPrice : gasMassKg * c.gasPrice;
+    return {L, volume, wireMass, wireCost, gasVolume, gasCost, totalCost: wireCost + gasCost};
   }
 
   function timeStr(){
@@ -397,6 +406,7 @@
     const d = computeDerived(c);
 
     $('hero-gas-kg').innerHTML = fmt(gasMassKg) + '<small>kg</small>';
+    $('hero-gas-m3').textContent = fmt(d.gasVolume) + ' m³';
     $('hero-gas-cost').textContent = fmtMoney(d.gasCost);
     $('hero-wire-m').innerHTML = fmt(d.L) + '<small>m</small>';
     $('hero-wire-kg').textContent = fmt(d.wireMass) + ' kg';
@@ -662,7 +672,7 @@
     sessionCount++;
     const row = {
       n: sessionCount, dur: timeStr(),
-      gasKg: gasMassKg, gasCost: d.gasCost,
+      gasKg: gasMassKg, gasM3: d.gasVolume, gasCost: d.gasCost,
       wireM: d.L, wireKg: d.wireMass, wireCost: d.wireCost,
       total: d.totalCost
     };
@@ -681,6 +691,7 @@
       <td><span class="pill">#${row.n}</span></td>
       <td>${row.dur}</td>
       <td>${fmt(row.gasKg)}</td>
+      <td>${fmt(row.gasM3)}</td>
       <td>${fmtMoney(row.gasCost)}</td>
       <td>${fmt(row.wireM)}</td>
       <td>${fmt(row.wireKg)}</td>
@@ -692,9 +703,9 @@
 
   function exportCSV(){
     if(historyData.length === 0){ alert('Nenhum registro para exportar ainda.'); return; }
-    let csv = 'Sessao;Duracao;Gas_kg;Custo_gas;Arame_m;Massa_arame_kg;Custo_arame;Custo_total\n';
+    let csv = 'Sessao;Duracao;Gas_kg;Gas_m3;Custo_gas;Arame_m;Massa_arame_kg;Custo_arame;Custo_total\n';
     historyData.forEach(r=>{
-      csv += [r.n, r.dur, fmt(r.gasKg), fmt(r.gasCost,2), fmt(r.wireM), fmt(r.wireKg), fmt(r.wireCost,2), fmt(r.total,2)].join(';') + '\n';
+      csv += [r.n, r.dur, fmt(r.gasKg), fmt(r.gasM3), fmt(r.gasCost,2), fmt(r.wireM), fmt(r.wireKg), fmt(r.wireCost,2), fmt(r.total,2)].join(';') + '\n';
     });
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
@@ -707,7 +718,7 @@
   $('startBtn').addEventListener('click', startStop);
   $('resetBtn').addEventListener('click', resetCurrent);
   $('exportBtn').addEventListener('click', exportCSV);
-  ['ppr','rollerD','wireD','wireSpeed','gasType','gasFlow','gasPrice','wirePrice'].forEach(id=>{
+  ['ppr','rollerD','wireD','wireSpeed','gasType','gasFlow','gasPrice','gasPriceUnit','wirePrice'].forEach(id=>{
     $(id).addEventListener('input', render);
   });
 
